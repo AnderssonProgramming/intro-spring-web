@@ -1,12 +1,153 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Spring Boot Form Example</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background-color: #f5f5f5;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            input[type="text"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+            button {
+                background-color: #007bff;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                margin-right: 10px;
+            }
+            button:hover {
+                background-color: #0056b3;
+            }
+            .ajax-button {
+                background-color: #28a745;
+            }
+            .ajax-button:hover {
+                background-color: #1e7e34;
+            }
+            .result {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-left: 4px solid #007bff;
+                border-radius: 4px;
+                min-height: 20px;
+            }
+            .result.hidden {
+                display: none;
+            }
+            .links {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+            }
+            .links a {
+                display: inline-block;
+                margin-right: 15px;
+                color: #007bff;
+                text-decoration: none;
+            }
+            .links a:hover {
+                text-decoration: underline;
+            }
+        </style>
     </head>
     <body>
-        <div><a href="/hello">Greetings</a></div>
-        <div><a href="/status">Server status</a></div>
+        <div class="container">
+            <h1>Spring Boot Form Example</h1>
+            
+            <!-- Exercise 1: Form with POST method that reloads page -->
+            <h2>Exercise 1: Form with Page Reload</h2>
+            <form action="/hello" method="POST">
+                <div class="form-group">
+                    <label for="name1">Enter your name:</label>
+                    <input type="text" id="name1" name="name" placeholder="Enter your name (e.g., Catalina)" required>
+                </div>
+                <button type="submit">Send (with page reload)</button>
+            </form>
+
+            <!-- Exercise 2: Form with JavaScript (no page reload) -->
+            <h2>Exercise 2: Form with JavaScript (No Page Reload)</h2>
+            <form id="ajaxForm">
+                <div class="form-group">
+                    <label for="name2">Enter your name:</label>
+                    <input type="text" id="name2" name="name" placeholder="Enter your name (e.g., Catalina)" required>
+                </div>
+                <button type="button" class="ajax-button" onclick="sendAjaxRequest()">Send (without page reload)</button>
+            </form>
+
+            <div id="result" class="result hidden">
+                <strong>Response:</strong> <span id="responseText"></span>
+            </div>
+
+            <div class="links">
+                <h3>Other endpoints:</h3>
+                <a href="/hello">GET Hello (default)</a>
+                <a href="/status">Server Status</a>
+            </div>
+        </div>
+
+        <script>
+            function sendAjaxRequest() {
+                const name = document.getElementById('name2').value;
+                const resultDiv = document.getElementById('result');
+                const responseSpan = document.getElementById('responseText');
+
+                // Create FormData object
+                const formData = new FormData();
+                formData.append('name', name);
+
+                // Make POST request using fetch API
+                fetch('/hello', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    responseSpan.textContent = data;
+                    resultDiv.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    responseSpan.textContent = 'Error occurred: ' + error.message;
+                    resultDiv.classList.remove('hidden');
+                });
+            }
+
+            // Optional: Submit form on Enter key press
+            document.getElementById('name2').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendAjaxRequest();
+                }
+            });
+        </script>
     </body>
 </html>
